@@ -12,20 +12,22 @@ function request_answer( thread, question, letter ) {
         if (XHR.readyState === XHR.DONE){
             let newlabel = document.createElement("p");
             if (XHR.status === 200) {
-                if (XHR.response["status"] === -1) {
+                if (XHR.response["status"] === -1) { // this is a mess. remake this stuff
                     already_got_answer = 0;
                     newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос."
-                }
-                newlabel.innerHTML = JSON.stringify(XHR.response)
-                if (XHR.response["status"] === 1) {
-                    captcha.children.CaptchaQuestionAnswer.value = XHR.response["answer"]
-                    newlabel.innerHTML = newlabel.innerHTML + "<br>Этот ответ был найден с помощью вопроса. Он может быть не верный"
-                    document.getElementsByClassName("LztContest--Participate")[0].style["background-color"] = "red"
-                } else if (XHR.response["status"] === 0) {
-                    captcha.children.CaptchaQuestionAnswer.value = XHR.response["answer"]
                 } else {
-                    newlabel.innerHTML = newlabel.innerHTML + "<br>Неизвестный статус ответа."
+                    newlabel.innerHTML = JSON.stringify(XHR.response)
+                    if (XHR.response["status"] === 1) {
+                        captcha.children.CaptchaQuestionAnswer.value = XHR.response["answer"]
+                        newlabel.innerHTML = newlabel.innerHTML + "<br>Этот ответ был найден с помощью вопроса. Он может быть не верный"
+                        document.getElementsByClassName("LztContest--Participate")[0].style["background-color"] = "red"
+                    } else if (XHR.response["status"] === 0) {
+                        captcha.children.CaptchaQuestionAnswer.value = XHR.response["answer"]
+                    } else {
+                        newlabel.innerHTML = newlabel.innerHTML + "<br>Неизвестный статус ответа."
+                    }
                 }
+
             } else {
                 newlabel.innerHTML = "Произошла какая то проблема. Больше информации в консоле"
             }
