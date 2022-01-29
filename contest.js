@@ -92,15 +92,18 @@ function onCaptcha(captcha) {
 
     let threadid = window.location.pathname.match("/threads/([0-9]+)/")[1]
 
-    browser.runtime.onMessage.addListener(request => {
+    chrome.runtime.onMessage.addListener(request => {
         console.log("Message from the background script:");
         console.log(request.request);
         console.log(request.response);
         console.log(already_got_answer);
+        console.log(request.response._redirectStatus);
+        console.log(request.response._redirectMessage);
+        console.log(request.request.captcha_type[0]);
         if (!already_got_answer
             && request.response._redirectStatus === "ok"
             && request.response._redirectMessage === "Успешно! Вы участвуете розыгрыше."
-            && request.request.requestBody.formData.captcha_type[0] === "AnswerCaptcha") {
+            && request.request.captcha_type === "AnswerCaptcha") {
             const XHR = new XMLHttpRequest(),
                 params = new URLSearchParams();
 
@@ -109,9 +112,9 @@ function onCaptcha(captcha) {
             if (hint_letter) {
                 params.append("l", hint_letter);
             }
-            params.append("a", request.request.requestBody.formData.captcha_question_answer[0]);
+            params.append("a", request.request.captcha_question_answer);
             XHR.responseType = 'json';
-
+			console.log(params)
             XHR.onload = function (event) {
                 console.log(XHR)
                 if (XHR.readyState === XHR.DONE) {
@@ -136,9 +139,16 @@ function onCaptcha(captcha) {
     request_answer(threadid, question, hint_letter)
 }
 
+var s = document.createElement('script');
+s.src = chrome.extension.getURL('injected.js');
+s.class = "Test";
+s.onload = function() {
+    this.remove();
+};
+(document.head || document.documentElement).appendChild(s);
+
 
 let already_got_answer = 1
 let captcha = document.getElementById("Captcha")
 if (captcha && captcha.children.captcha_type.value === "AnswerCaptcha")
     onCaptcha(captcha)
-
