@@ -93,13 +93,6 @@ function onCaptcha(captcha) {
     let threadid = window.location.pathname.match("/threads/([0-9]+)/")[1]
 
     chrome.runtime.onMessage.addListener(request => {
-        console.log("Message from the background script:");
-        console.log(request.request);
-        console.log(request.response);
-        console.log(already_got_answer);
-        console.log(request.response._redirectStatus);
-        console.log(request.response._redirectMessage);
-        console.log(request.request.captcha_type[0]);
         if (!already_got_answer
             && request.response._redirectStatus === "ok"
             && request.response._redirectMessage === "Успешно! Вы участвуете розыгрыше."
@@ -108,13 +101,12 @@ function onCaptcha(captcha) {
                 params = new URLSearchParams();
 
             params.append("id", threadid);
-            params.append("q", question);
+            params.append("q", decodeURI(question));
             if (hint_letter) {
-                params.append("l", hint_letter);
+                params.append("l", decodeURI(hint_letter));
             }
-            params.append("a", request.request.captcha_question_answer);
+            params.append("a", decodeURI(request.request.captcha_question_answer));
             XHR.responseType = 'json';
-			console.log(params)
             XHR.onload = function (event) {
                 console.log(XHR)
                 if (XHR.readyState === XHR.DONE) {
