@@ -17,13 +17,6 @@ function request_answer(thread, question, letter) {
                 if (XHR.response["status"] === -1) { // this is a mess. remake this stuff
                     already_got_answer = 0;
                     newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос.";
-					try {
-						// По идеи .replace(/[^-()\d/*+.]/g, '') должен обезопасить eval от лишнего мусора (Вдруг, кто-то в вопросе сделает код для JS)
-						captcha.children.CaptchaQuestionAnswer.value = eval(question.replace("X", "*").replace("x", "*").replace("\\", "/").replace("?", "").replace("=", "").replace("--", "-").replace(/[^-()\d/*+.]/g, ''));
-					}catch (e) {
-						console.log("No match question.");
-						console.log(e);
-					}
                 } else {
                     newlabel.innerHTML = JSON.stringify(XHR.response)
                     if (XHR.response["status"] === 1) {
@@ -49,6 +42,18 @@ function request_answer(thread, question, letter) {
         alert('Ошибка соеденения с сервером. Больше информации в консоле');
         console.log(event)
     });
+
+/* 	try {
+		// По идеи .replace(/[^-()\d/*+.]/g, '') должен обезопасить eval от лишнего мусора (Вдруг, кто-то в вопросе сделает код для JS)
+		already_got_answer = 0;
+		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
+		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;					
+		newlabel.innerHTML = newlabel.innerHTML + "<br>Этот ответ был найден с помощью вопроса. Он может быть не верный"
+		document.getElementsByClassName("LztContest--Participate")[0].style["background-color"] = "red"
+	}catch (e) {
+		console.log("No match question.");
+		console.log(e);
+	} */
 
     XHR.open('GET', 'https://answers.acuifex.ru/query.php?' + params.toString());
     XHR.send();
@@ -77,6 +82,11 @@ function onCaptcha(captcha) {
     createButton("Имя", function () {
         captcha.children.CaptchaQuestionAnswer.value = document.getElementById("messageList")
             .getElementsByClassName("message  firstPost  ")[0].dataset.author
+        return false;
+    })    
+	createButton("Math", function () {
+		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
+		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;
         return false;
     })
     createButton("Первое слово", function () {
