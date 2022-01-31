@@ -16,7 +16,14 @@ function request_answer(thread, question, letter) {
             if (XHR.status === 200) {
                 if (XHR.response["status"] === -1) { // this is a mess. remake this stuff
                     already_got_answer = 0;
-                    newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос."
+                    newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос.";
+					try {
+						// По идеи .replace(/[^-()\d/*+.]/g, '') должен обезопасить eval от лишнего мусора (Вдруг, кто-то в вопросе сделает код для JS)
+						captcha.children.CaptchaQuestionAnswer.value = eval(question.replace("X", "*").replace("x", "*").replace("\\", "/").replace("?", "").replace("=", "").replace("--", "-").replace(/[^-()\d/*+.]/g, ''));
+					}catch (e) {
+						console.log("No match question.");
+						console.log(e);
+					}
                 } else {
                     newlabel.innerHTML = JSON.stringify(XHR.response)
                     if (XHR.response["status"] === 1) {
