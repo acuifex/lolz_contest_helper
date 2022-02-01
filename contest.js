@@ -84,8 +84,8 @@ function onCaptcha(captcha) {
             .getElementsByClassName("message  firstPost  ")[0].dataset.author
         return false;
     })    
-	createButton("Math", function () {
-		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
+    createButton("Math", function () {
+		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить на", "/").replace("поделить", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
 		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;
         return false;
     })
