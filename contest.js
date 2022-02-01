@@ -72,6 +72,11 @@ function onCaptcha(captcha) {
             .getElementsByClassName("message  firstPost  ")[0].dataset.author
         return false;
     })
+	createButton("Math", function () {
+		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
+		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;
+        return false;
+    })
     createButton("Первое слово", function () {
         title = document.getElementsByClassName("titleBar")[0].children[0].lastChild.textContent.trim()
         n = title.split(" ");
