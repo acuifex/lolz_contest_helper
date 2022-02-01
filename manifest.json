@@ -3,7 +3,7 @@
 
   "name": "autocontest",
   "version": "1.2",
-  "author": "acuifex & mrnagaron",
+  "author": "acuifex",
   "background": {
     "scripts": ["packetListener.js"]
   },
@@ -14,10 +14,16 @@
       "run_at": "document_end"
     }
   ],
-  "externally_connectable": {
-	  "ids": ["gmfppbeocnnaimheiappmcadeffhnhlo"],
-      "matches": ["*://*.lolz.guru/*"]
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "lolz_contest_helper_extension@example.org",
+      "strict_min_version": "42.0"
+    }
   },
+
+  "host_permissions": [
+    "*://*.lolz.guru/*"
+  ],
   "options_ui": {
     "page": "settings.html",
     "browser_style": true
@@ -26,6 +32,5 @@
     "activeTab",
     "*://answers.acuifex.ru/query.php",
     "tabs", "<all_urls>", "webRequest", "webRequestBlocking", "storage"
-  ],
-  "web_accessible_resources": ["injected.js"]
+  ]
 }

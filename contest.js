@@ -16,7 +16,7 @@ function request_answer(thread, question, letter) {
             if (XHR.status === 200) {
                 if (XHR.response["status"] === -1) { // this is a mess. remake this stuff
                     already_got_answer = 0;
-                    newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос.";
+                    newlabel.innerHTML = "Сервер не имеет ответа на такой вопрос."
                 } else {
                     newlabel.innerHTML = JSON.stringify(XHR.response)
                     if (XHR.response["status"] === 1) {
@@ -42,18 +42,6 @@ function request_answer(thread, question, letter) {
         alert('Ошибка соеденения с сервером. Больше информации в консоле');
         console.log(event)
     });
-
-/* 	try {
-		// По идеи .replace(/[^-()\d/*+.]/g, '') должен обезопасить eval от лишнего мусора (Вдруг, кто-то в вопросе сделает код для JS)
-		already_got_answer = 0;
-		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
-		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;					
-		newlabel.innerHTML = newlabel.innerHTML + "<br>Этот ответ был найден с помощью вопроса. Он может быть не верный"
-		document.getElementsByClassName("LztContest--Participate")[0].style["background-color"] = "red"
-	}catch (e) {
-		console.log("No match question.");
-		console.log(e);
-	} */
 
     XHR.open('GET', 'https://answers.acuifex.ru/query.php?' + params.toString());
     XHR.send();
@@ -83,9 +71,9 @@ function onCaptcha(captcha) {
         captcha.children.CaptchaQuestionAnswer.value = document.getElementById("messageList")
             .getElementsByClassName("message  firstPost  ")[0].dataset.author
         return false;
-    })    
-    createButton("Math", function () {
-		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить на", "/").replace("поделить", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
+    })
+	createButton("Math", function () {
+		let calc = eval(question.toLowerCase().replace("x", "*").replace("\\", "/").replace("--", "-").replace("умножить на", "*").replace("умножить", "*").replace("поделить", "/").replace("поделить на", "/").replace("плюс", "+").replace("минус", "-").replace(/[^-()\d/*+.]/g, ''));
 		captcha.children.CaptchaQuestionAnswer.value = (calc === undefined) ? "" : calc;
         return false;
     })
@@ -109,21 +97,26 @@ function onCaptcha(captcha) {
 
     let threadid = window.location.pathname.match("/threads/([0-9]+)/")[1]
 
-    chrome.runtime.onMessage.addListener(request => {
+    browser.runtime.onMessage.addListener(request => {
+        console.log("Message from the background script:");
+        console.log(request.request);
+        console.log(request.response);
+        console.log(already_got_answer);
         if (!already_got_answer
             && request.response._redirectStatus === "ok"
             && request.response._redirectMessage === "Успешно! Вы участвуете розыгрыше."
-            && request.request.captcha_type === "AnswerCaptcha") {
+            && request.request.requestBody.formData.captcha_type[0] === "AnswerCaptcha") {
             const XHR = new XMLHttpRequest(),
                 params = new URLSearchParams();
 
             params.append("id", threadid);
-            params.append("q", decodeURI(question));
+            params.append("q", question);
             if (hint_letter) {
-                params.append("l", decodeURI(hint_letter));
+                params.append("l", hint_letter);
             }
-            params.append("a", decodeURI(request.request.captcha_question_answer));
+            params.append("a", request.request.requestBody.formData.captcha_question_answer[0]);
             XHR.responseType = 'json';
+
             XHR.onload = function (event) {
                 console.log(XHR)
                 if (XHR.readyState === XHR.DONE) {
@@ -148,16 +141,9 @@ function onCaptcha(captcha) {
     request_answer(threadid, question, hint_letter)
 }
 
-var s = document.createElement('script');
-s.src = chrome.extension.getURL('injected.js');
-s.class = "Test";
-s.onload = function() {
-    this.remove();
-};
-(document.head || document.documentElement).appendChild(s);
-
 
 let already_got_answer = 1
 let captcha = document.getElementById("Captcha")
 if (captcha && captcha.children.captcha_type.value === "AnswerCaptcha")
     onCaptcha(captcha)
+
