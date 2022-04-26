@@ -104,7 +104,10 @@ function onCaptcha(captcha) {
         console.log(already_got_answer);
         if (!already_got_answer
             && request.response._redirectStatus === "ok"
+            // TODO: remove this check? this might fail when you have a different language
             && request.response._redirectMessage === "Успешно! Вы участвуете розыгрыше."
+            // check that the request is for the same page as the script
+            && request.url.match("/threads/([0-9]+)/participate")[1] == threadid
             && request.request.requestBody.formData.captcha_type[0] === "AnswerCaptcha") {
             const XHR = new XMLHttpRequest(),
                 params = new URLSearchParams();

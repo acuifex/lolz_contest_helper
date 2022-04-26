@@ -23,7 +23,6 @@ function listener(details) {
     //return {}; // not needed
 }
 
-// web programming sucks. i'm like 99% sure that this creates a memory leak.
 browser.webRequest.onBeforeRequest.addListener(
     listener,
     {urls: ["https://lolz.guru/threads/*/participate"]},
