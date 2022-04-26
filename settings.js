@@ -1,22 +1,19 @@
 // TODO: make options for tokens
-// function saveOptions(e) {
-//     browser.storage.sync.set({
-//         colour: document.querySelector("#colour").value
-//     });
-//     e.preventDefault();
-// }
-//
-// function restoreOptions() {
-//     var storageItem = browser.storage.sync.get('colour');
-//     storageItem.then((res) => {
-//         document.querySelector("#managed-colour").innerText = res.colour;
-//     });
-//
-//     var gettingItem = browser.storage.sync.get('colour');
-//     gettingItem.then((res) => {
-//         document.querySelector("#colour").value = res.colour || 'Firefox red';
-//     });
-// }
-//
-// document.addEventListener('DOMContentLoaded', restoreOptions);
-// document.querySelector("form").addEventListener("submit", saveOptions);
+function saveOptions(e) {
+    browser.storage.sync.set({
+        token: document.querySelector("#token").value
+    });
+    restoreOptions()
+    e.preventDefault();
+}
+
+function restoreOptions() {
+    var storageItem = browser.storage.sync.get('token');
+    storageItem.then((res) => {
+        document.querySelector("#value-token").innerText = res.token;
+        document.querySelector("#token").value = res.token || '';
+    });
+
+}
+document.addEventListener('DOMContentLoaded', restoreOptions);
+document.querySelector("form").addEventListener("submit", saveOptions);
